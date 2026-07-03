@@ -23,15 +23,7 @@ Instead of acting as a simple calculator that outputs a final answer, this tool 
 
 **How to use the visualizer:**
 1) Clone the repository:
-
-Bash
-git clone https://github.com/yourusername/numerical-methods-visualizer.git
-
 2) Navigate to the project directory:
-
-Bash
-cd numerical-methods-visualizer
-
 3) Open index.html directly in any modern web browser.
 
 **Author:**
