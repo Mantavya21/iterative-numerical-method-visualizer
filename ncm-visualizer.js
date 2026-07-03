@@ -570,10 +570,10 @@ function makeTransform(bounds, w, h) {
 
 function drawGrid(ctx, bounds, t, w, h) {
   ctx.save();
-  ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+  ctx.strokeStyle = 'rgba(0,0,0,0.08)';
   ctx.lineWidth = 1;
-  ctx.font = '10px "IBM Plex Mono", monospace';
-  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = '10px "Courier New", monospace';
+  ctx.fillStyle = 'rgba(0,0,0,0.45)';
   var xStep = niceStep(bounds.xMax - bounds.xMin);
   var yStep = niceStep(bounds.yMax - bounds.yMin);
   var gx;
@@ -588,7 +588,7 @@ function drawGrid(ctx, bounds, t, w, h) {
     ctx.beginPath(); ctx.moveTo(t.margin.l, py); ctx.lineTo(w - t.margin.r, py); ctx.stroke();
     ctx.fillText(fmt(gy, 3), 6, py - 3);
   }
-  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.strokeStyle = 'rgba(0,0,0,0.35)';
   ctx.lineWidth = 1.3;
   if (bounds.yMin <= 0 && bounds.yMax >= 0) {
     var py0 = t.toPx(0, 0)[1];
@@ -629,7 +629,7 @@ function drawPointMarker(ctx, t, x, y, color, r) {
   ctx.fillStyle = color;
   ctx.fill();
   ctx.lineWidth = 1.4;
-  ctx.strokeStyle = 'rgba(10,12,16,0.85)';
+  ctx.strokeStyle = 'rgba(255,255,255,0.9)';
   ctx.stroke();
 }
 
@@ -646,16 +646,16 @@ function drawSolidSeg(ctx, t, x1, y1, x2, y2, color, width, glow, alpha) {
   var p1 = t.toPx(x1, y1), p2 = t.toPx(x2, y2);
   ctx.save();
   ctx.globalAlpha = alpha === undefined ? 1 : alpha;
-  if (glow) { ctx.shadowColor = color; ctx.shadowBlur = 12; }
+  if (glow) { ctx.shadowColor = color; ctx.shadowBlur = 4; }
   ctx.strokeStyle = color; ctx.lineWidth = width || 2;
   ctx.beginPath(); ctx.moveTo(p1[0], p1[1]); ctx.lineTo(p2[0], p2[1]); ctx.stroke();
   ctx.restore();
 }
 
-var COLOR_CURVE = '#5eead4';
-var COLOR_PHOSPHOR = '#ffb454';
-var COLOR_DIM = '#3a4157';
-var COLOR_DANGER = '#ff6b6b';
+var COLOR_CURVE = '#3366cc';
+var COLOR_PHOSPHOR = '#e08a2b';
+var COLOR_DIM = '#aaaaaa';
+var COLOR_DANGER = '#cc3333';
 
 /*BOUNDS PER METHOD*/
 function rootFindingBounds(f, steps) {
@@ -709,7 +709,7 @@ function drawNewtonOverlay(ctx, t, bounds, steps, idx, animT) {
     var isCurrent = i === idx;
     var alpha = isCurrent ? 1 : 0.4;
     drawDashedSeg(ctx, t, s.x, 0, s.x, s.fx, COLOR_DIM, alpha);
-    drawPointMarker(ctx, t, s.x, s.fx, isCurrent ? COLOR_PHOSPHOR : '#6b7284', isCurrent ? 5 : 3.4);
+    drawPointMarker(ctx, t, s.x, s.fx, isCurrent ? COLOR_PHOSPHOR : '#666666', isCurrent ? 5 : 3.4);
     if (s.fpx !== undefined && s.fpx !== null && s.xNext !== undefined) {
       var ends = { y1: tangentLineY(bounds.xMin, s.x, s.fx, s.fpx), y2: tangentLineY(bounds.xMax, s.x, s.fx, s.fpx) };
       var a = isCurrent ? Math.max(0.25, animT) : alpha;
@@ -718,7 +718,7 @@ function drawNewtonOverlay(ctx, t, bounds, steps, idx, animT) {
       var mx = s.x + (s.xNext - s.x) * revealT;
       var my = s.fx + (0 - s.fx) * revealT;
       if (isCurrent) drawPointMarker(ctx, t, mx, my, COLOR_CURVE, 4.2);
-      if (!isCurrent || animT > 0.85) drawPointMarker(ctx, t, s.xNext, 0, '#c9cfdc', 3);
+      if (!isCurrent || animT > 0.85) drawPointMarker(ctx, t, s.xNext, 0, '#555555', 3);
     }
   }
 }
@@ -728,7 +728,7 @@ function drawSecantOverlay(ctx, t, bounds, steps, idx, animT) {
     var s = steps[i];
     if (s.fx === null || s.fx === undefined) continue;
     var isCurrent = i === idx;
-    drawPointMarker(ctx, t, s.x, s.fx, isCurrent ? COLOR_PHOSPHOR : '#6b7284', isCurrent ? 5 : 3.4);
+    drawPointMarker(ctx, t, s.x, s.fx, isCurrent ? COLOR_PHOSPHOR : '#666666', isCurrent ? 5 : 3.4);
   }
   for (i = 2; i <= idx; i++) {
     var p0 = steps[i - 2], p1 = steps[i - 1], target = steps[i];
@@ -776,7 +776,7 @@ function drawMullerOverlay(ctx, t, bounds, steps, idx, animT) {
       drawCurveFromSamples(ctx, t, bounds, quadFn, isCurrent ? COLOR_PHOSPHOR : COLOR_DIM, isCurrent ? 2.1 : 1.2);
       ctx.restore();
       [real0, real1, real2].forEach(function (p) {
-        drawPointMarker(ctx, t, p.x, p.y, isCurrent ? '#c9cfdc' : '#565d6d', isCurrent ? 3.6 : 2.8);
+        drawPointMarker(ctx, t, p.x, p.y, isCurrent ? '#555555' : '#999999', isCurrent ? 3.6 : 2.8);
       });
       if (Math.abs(s.x.im) < 1e-6) {
         var revealT = isCurrent ? animT : 1;
@@ -784,7 +784,7 @@ function drawMullerOverlay(ctx, t, bounds, steps, idx, animT) {
         var mx = real2.x + (s.x.re - real2.x) * revealT;
         var my = startY + (0 - startY) * revealT;
         if (isCurrent) drawPointMarker(ctx, t, mx, my, COLOR_CURVE, 4.2);
-        if (!isCurrent || animT > 0.85) drawPointMarker(ctx, t, s.x.re, 0, '#c9cfdc', 3);
+        if (!isCurrent || animT > 0.85) drawPointMarker(ctx, t, s.x.re, 0, '#555555', 3);
       }
     }
   }
@@ -792,7 +792,7 @@ function drawMullerOverlay(ctx, t, bounds, steps, idx, animT) {
 
 function drawSplineOverlay(ctx, t, bounds, steps, idx, animT, points) {
   points.forEach(function (p) {
-    drawPointMarker(ctx, t, p.x, p.y, '#8891a3', 3.6);
+    drawPointMarker(ctx, t, p.x, p.y, '#777777', 3.6);
   });
   for (var i = 0; i <= idx; i++) {
     var seg = steps[i];
@@ -807,9 +807,9 @@ function drawSplineOverlay(ctx, t, bounds, steps, idx, animT, points) {
     var clipBounds = { xMin: seg.x0, xMax: xEnd, yMin: bounds.yMin, yMax: bounds.yMax };
     if (xEnd > seg.x0) drawCurveFromSamples(ctx, t, clipBounds, fn, isCurrent ? COLOR_CURVE : COLOR_DIM, isCurrent ? 2.6 : 1.6);
     ctx.restore();
-    drawPointMarker(ctx, t, seg.x0, seg.a, isCurrent ? COLOR_PHOSPHOR : '#6b7284', isCurrent ? 4.6 : 3.2);
+    drawPointMarker(ctx, t, seg.x0, seg.a, isCurrent ? COLOR_PHOSPHOR : '#666666', isCurrent ? 4.6 : 3.2);
     if (!isCurrent || animT > 0.9) {
-      drawPointMarker(ctx, t, seg.x1, fn(seg.x1), isCurrent ? COLOR_PHOSPHOR : '#6b7284', isCurrent ? 4.6 : 3.2);
+      drawPointMarker(ctx, t, seg.x1, fn(seg.x1), isCurrent ? COLOR_PHOSPHOR : '#666666', isCurrent ? 4.6 : 3.2);
     }
   }
   var evalXRaw = state.params.spline.evalX;
@@ -1029,13 +1029,13 @@ function renderTransport() {
 
   var legendItems = [];
   if (state.method === 'newton') {
-    legendItems = [['tangent line', COLOR_PHOSPHOR], ['f(x) curve', COLOR_CURVE], ['next estimate', '#c9cfdc']];
+    legendItems = [['tangent line', COLOR_PHOSPHOR], ['f(x) curve', COLOR_CURVE], ['next estimate', '#555555']];
   } else if (state.method === 'secant') {
     legendItems = [['secant line', COLOR_PHOSPHOR], ['f(x) curve', COLOR_CURVE]];
   } else if (state.method === 'muller') {
     legendItems = [['interpolating parabola', COLOR_PHOSPHOR], ['f(x) curve', COLOR_CURVE]];
   } else {
-    legendItems = [['current segment', COLOR_CURVE], ['completed segments', COLOR_DIM], ['data points', '#8891a3']];
+    legendItems = [['current segment', COLOR_CURVE], ['completed segments', COLOR_DIM], ['data points', '#777777']];
   }
   dom.transportLegend.innerHTML = legendItems.map(function (it) {
     return '<span><span class="legend-swatch" style="background:' + it[1] + '"></span>' + it[0] + '</span>';
