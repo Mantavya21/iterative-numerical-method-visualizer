@@ -18,8 +18,8 @@ Instead of acting as a simple calculator that outputs a final answer, this tool 
 
 **Technology Stack:**
 1) Frontend: Vanilla HTML5, CSS3, JavaScript (ES6)
-2) Canvas Rendering: Native HTML5 <canvas> API (No heavy charting libraries)
-3) Mathematics: Math.js (Utilized strictly for safe string parsing and symbolic differentiation)
+2) Canvas Rendering: Native HTML5 <canvas> API
+3) Mathematics: Math.js
 
 **How to use the visualizer:**
 1) Clone the repository:
