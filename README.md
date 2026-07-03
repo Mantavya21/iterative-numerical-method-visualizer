@@ -34,5 +34,5 @@ cd numerical-methods-visualizer
 
 3) Open index.html directly in any modern web browser.
 
-Author
+**Author:**
 Mantavya Bhojani
