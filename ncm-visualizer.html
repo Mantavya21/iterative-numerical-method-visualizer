@@ -3,23 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Iterative Numerical Methods &amp; Algorithm Visualizer</title>
+<title>Numerical Methods Visualizer</title>
 <meta name="description" content="Step through root-finding and interpolation algorithms one iteration at a time.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ncm-visualizer.css">
 </head>
 <body>
 
-<div class="grain" aria-hidden="true"></div>
-
 <header class="masthead">
   <div class="masthead__inner">
     <div class="masthead__id">
-      <span class="masthead__eyebrow">INSTRUMENT&nbsp;PANEL&nbsp;01 &mdash; ROOT&#8209;FINDING&nbsp;&amp;&nbsp;INTERPOLATION</span>
-      <h1 class="masthead__title">Iterative Numerical<br>Methods Visualizer</h1>
-      <p class="masthead__sub">Dial in an equation, choose a method, and step through convergence one move at a time.</p>
+      <h1 class="masthead__title">Numerical Methods Visualizer</h1>
     </div>
     <div class="readout" id="statusReadout" aria-live="polite">
       <div class="readout__row">
@@ -44,7 +37,7 @@
   <section class="panel" id="configPanel">
     <div class="panel__header">
       <h2><span class="panel__index">01</span> Configuration</h2>
-      <p class="panel__hint">Choose a method, then set its starting conditions.</p>
+      <p class="panel__hint">pick a method and fill in the inputs</p>
     </div>
 
     <div class="panel__body">
@@ -97,7 +90,7 @@
 
       <div class="config-footer">
         <button class="btn btn--primary" id="computeBtn" type="button">Compute Iterations</button>
-        <p class="config-footer__note" id="configNote">Uses the natural derivative of f(x), evaluated symbolically.</p>
+        <p class="config-footer__note" id="configNote">(derivative is computed automatically)</p>
       </div>
     </div>
   </section>
@@ -149,7 +142,7 @@
   <section class="panel" id="dataPanel">
     <div class="panel__header">
       <h2><span class="panel__index">03</span> Convergence Data</h2>
-      <p class="panel__hint">Every step, up through the current frame.</p>
+      <p class="panel__hint">table of all steps so far</p>
     </div>
     <div class="panel__body">
       <div class="table-wrap">
@@ -163,10 +156,6 @@
   </section>
 
 </main>
-
-<footer class="foot">
-  <span>All computation runs locally in your browser. Nothing is uploaded, nothing is tracked.</span>
-</footer>
 
 <script src="https://unpkg.com/mathjs@12.4.2/lib/browser/math.js"></script>
 <script src="ncm-visualizer.js"></script>
