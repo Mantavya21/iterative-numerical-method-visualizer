@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Iterative Numerical Methods &amp; Algorithm Visualizer</title>
+<meta name="description" content="Step through root-finding and interpolation algorithms one iteration at a time.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="grain" aria-hidden="true"></div>
+
+<header class="masthead">
+  <div class="masthead__inner">
+    <div class="masthead__id">
+      <span class="masthead__eyebrow">INSTRUMENT&nbsp;PANEL&nbsp;01 &mdash; ROOT&#8209;FINDING&nbsp;&amp;&nbsp;INTERPOLATION</span>
+      <h1 class="masthead__title">Iterative Numerical<br>Methods Visualizer</h1>
+      <p class="masthead__sub">Dial in an equation, choose a method, and step through convergence one move at a time.</p>
+    </div>
+    <div class="readout" id="statusReadout" aria-live="polite">
+      <div class="readout__row">
+        <span class="readout__label">method</span>
+        <span class="readout__value" id="readoutMethod">NEWTON&#8209;RAPHSON</span>
+      </div>
+      <div class="readout__row">
+        <span class="readout__label">state</span>
+        <span class="readout__value" id="readoutState">READY</span>
+      </div>
+      <div class="readout__row">
+        <span class="readout__label">root&nbsp;&asymp;</span>
+        <span class="readout__value" id="readoutRoot">&mdash;</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="sheet">
+
+  <!-- CONFIGURATION -->
+  <section class="panel" id="configPanel">
+    <div class="panel__header">
+      <h2><span class="panel__index">01</span> Configuration</h2>
+      <p class="panel__hint">Choose a method, then set its starting conditions.</p>
+    </div>
+
+    <div class="panel__body">
+      <div class="method-tabs" id="methodTabs" role="tablist">
+        <button class="method-tab is-active" data-method="newton" role="tab" aria-selected="true">
+          <span class="method-tab__glyph" aria-hidden="true">
+            <svg viewBox="0 0 32 32"><path d="M4 26 L28 6" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="20" cy="12.5" r="2" fill="currentColor"/><path d="M20 12.5 L20 26 M4 26 L28 26" stroke="currentColor" stroke-width="1.4" fill="none" opacity="0.55"/></svg>
+          </span>
+          Newton&#8209;Raphson
+        </button>
+        <button class="method-tab" data-method="secant" role="tab" aria-selected="false">
+          <span class="method-tab__glyph" aria-hidden="true">
+            <svg viewBox="0 0 32 32"><path d="M4 22 L28 10" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="6" cy="21.5" r="2" fill="currentColor"/><circle cx="24" cy="12" r="2" fill="currentColor"/><path d="M4 26 L28 26" stroke="currentColor" stroke-width="1.4" opacity="0.55"/></svg>
+          </span>
+          Secant
+        </button>
+        <button class="method-tab" data-method="muller" role="tab" aria-selected="false">
+          <span class="method-tab__glyph" aria-hidden="true">
+            <svg viewBox="0 0 32 32"><path d="M4 24 Q16 2 28 24" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="8" cy="18.6" r="1.8" fill="currentColor"/><circle cx="16" cy="9.4" r="1.8" fill="currentColor"/><circle cx="24" cy="18.6" r="1.8" fill="currentColor"/></svg>
+          </span>
+          Muller&rsquo;s
+        </button>
+        <button class="method-tab" data-method="spline" role="tab" aria-selected="false">
+          <span class="method-tab__glyph" aria-hidden="true">
+            <svg viewBox="0 0 32 32"><path d="M3 22 C 9 6, 13 28, 18 14 S 27 6, 29 12" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="3" cy="22" r="1.6" fill="currentColor"/><circle cx="15" cy="17" r="1.6" fill="currentColor"/><circle cx="29" cy="12" r="1.6" fill="currentColor"/></svg>
+          </span>
+          Cubic Spline
+        </button>
+      </div>
+
+      <div class="config-grid">
+
+        <div class="field-group" id="equationGroup">
+          <label class="field-label" for="equationInput">f(x) &mdash; expression</label>
+          <input type="text" id="equationInput" class="field-input field-input--mono" value="x^3 - 2*x - 5" spellcheck="false" autocomplete="off">
+          <p class="field-status" id="equationStatus">Parsed successfully.</p>
+        </div>
+
+        <div class="field-group" id="splinePointsGroup" hidden>
+          <label class="field-label">Data points (x, y) &mdash; sorted by x</label>
+          <div class="points-table" id="pointsTable"></div>
+          <button class="btn btn--ghost btn--small" id="addPointBtn" type="button">+ Add point</button>
+        </div>
+
+        <div class="param-row" id="paramRow">
+          <!-- populated dynamically per method -->
+        </div>
+
+      </div>
+
+      <div class="config-footer">
+        <button class="btn btn--primary" id="computeBtn" type="button">Compute Iterations</button>
+        <p class="config-footer__note" id="configNote">Uses the natural derivative of f(x), evaluated symbolically.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLAYGROUND -->
+  <section class="panel" id="playgroundPanel">
+    <div class="panel__header">
+      <h2><span class="panel__index">02</span> Visualization</h2>
+      <div class="step-indicator">
+        <span>STEP</span>
+        <span class="step-indicator__value"><span id="stepCurrent">0</span> / <span id="stepTotal">0</span></span>
+      </div>
+    </div>
+
+    <div class="panel__body">
+      <div class="canvas-frame">
+        <div class="canvas-frame__ticks" aria-hidden="true"></div>
+        <canvas id="plotCanvas"></canvas>
+        <div class="error-card hidden" id="errorCard">
+          <svg class="error-card__glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 L22 20 L2 20 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 9 L12 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="17" r="0.9" fill="currentColor"/></svg>
+          <div>
+            <p class="error-card__title" id="errorCardTitle">Method breakdown</p>
+            <p class="error-card__body" id="errorCardBody">&mdash;</p>
+          </div>
+        </div>
+        <p class="canvas-frame__empty" id="canvasEmpty">Set your parameters and press <strong>Compute Iterations</strong> to begin.</p>
+      </div>
+
+      <div class="transport">
+        <button class="transport__btn" id="btnReset" title="Reset to step 0" aria-label="Reset">
+          <svg viewBox="0 0 24 24"><path d="M12 5 V2 L7 6 L12 10 V7 A6 6 0 1 1 6 13 H4 A8 8 0 1 0 12 5 Z" fill="currentColor"/></svg>
+        </button>
+        <button class="transport__btn" id="btnPrev" title="Previous step" aria-label="Previous step">
+          <svg viewBox="0 0 24 24"><path d="M16 5 L8 12 L16 19 Z" fill="currentColor"/></svg>
+        </button>
+        <button class="transport__btn transport__btn--play" id="btnPlay" title="Play" aria-label="Play">
+          <svg viewBox="0 0 24 24" id="playIcon"><path d="M8 5 L19 12 L8 19 Z" fill="currentColor"/></svg>
+        </button>
+        <button class="transport__btn" id="btnNext" title="Next step" aria-label="Next step">
+          <svg viewBox="0 0 24 24"><path d="M8 5 L16 12 L8 19 Z" fill="currentColor"/></svg>
+        </button>
+        <input type="range" id="stepSlider" class="transport__slider" min="0" max="0" value="0" step="1" aria-label="Step scrubber">
+        <div class="transport__legend" id="transportLegend"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DATA GRID -->
+  <section class="panel" id="dataPanel">
+    <div class="panel__header">
+      <h2><span class="panel__index">03</span> Convergence Data</h2>
+      <p class="panel__hint">Every step, up through the current frame.</p>
+    </div>
+    <div class="panel__body">
+      <div class="table-wrap">
+        <table id="dataTable">
+          <thead id="dataTableHead"></thead>
+          <tbody id="dataTableBody"></tbody>
+        </table>
+        <p class="table-wrap__empty" id="tableEmpty">No data yet &mdash; compute iterations above.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <span>All computation runs locally in your browser. Nothing is uploaded, nothing is tracked.</span>
+</footer>
+
+<script src="https://unpkg.com/mathjs@12.4.2/lib/browser/math.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
